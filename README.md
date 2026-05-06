@@ -1,134 +1,392 @@
-# Benchmarking Expert Chatbot Personas
+# LLM Persona Drift Benchmark
 
-![Last Commit](https://img.shields.io/github/last-commit/tiffani3ng/iphs391_fall2025_miniproject-1_benchmarking-expert-chatbot-personas)
-![Repo Size](https://img.shields.io/github/repo-size/tiffani3ng/iphs391_fall2025_miniproject-1_benchmarking-expert-chatbot-personas)
+***A prompt-engineering and evaluation project for measuring how well an LLM maintains a designed persona across multi-turn conversation.***
 
-*A Mini-Project for IPHS 391 (Fall 2025) on persona prompt design and rubric-based benchmarking.*
+This repository documents a small benchmarking study on **persona drift**: the tendency of a chatbot to start with a specified persona behavior, then gradually slide toward generic assistant-like or generic text-message behavior over the course of a conversation.
 
----
-
-## Overview
-
-This repository explores **how effectively large language models (LLMs) can emulate designed personas** when guided by carefully engineered prompts. It provides:
-
-* A **persona definition** and constraints,
-* A **10-turn conversation transcript**,
-* A **scoring rubric** and rubric history,
-* A structured **report** synthesizing findings.
-
-The goal is to make persona benchmarking **transparent, repeatable, and comparable** for both technical and non-technical audiences.
+The project includes a persona prompt, an exported conversation transcript, a rubric for evaluating non-public figure personas, a scored evaluation, and notes on how the prompt and rubric were developed.
 
 ---
 
-## Methodology
+## Project Overview
 
-1. **Persona Prompt Engineering**
+This project asks a simple question:
 
-   * Crafted a detailed persona (biographical details, tone, quirks, conversational style).
-   * Used constraint-based instructions (sentence length, emoji policy, capitalization/punctuation habits).
-   * Iteratively refined prompts to balance **specificity** (to anchor the persona) with **flexibility** (to handle diverse inputs).
+> Can a large language model maintain a highly specific, non-public persona across casual multi-turn dialogue?
 
-2. **Conversation Protocol**
+The goal is to show how qualitative model behavior can be converted into an explicit evaluation framework, scored against observable criteria, and used to diagnose where the system is failing. To test this, I designed a persona prompt for a non-public student persona, ran a casual conversation with the resulting chatbot, and evaluated the transcript using a weighted rubric.
 
-   * Ran **10-turn dialogs** with the persona to elicit a range of behaviors (casual chat, preferences, references to background).
-   * Kept user prompts consistent to enable fair comparison across iterations.
+The benchmark focuses on whether the model can preserve:
 
-3. **Evaluation Framework**
+- persona-specific background details,
+- conversational quirks,
+- tone and style constraints,
+- prompt-bound fidelity,
+- contextual responsiveness,
+- and coherence over time.
 
-   * Applied a **0–100 point rubric** with weighted factors that assess:
+---
 
-     * Persona alignment with the system prompt,
-     * Style/voice fidelity,
-     * Contextual responsiveness,
-     * Creativity and depth,
-     * Engagement and coherence,
-     * Adherence to explicit prompt constraints.
+## Repository Contents
+
+```text
+llm-persona-drift-benchmark/
+├── prompt_persona.txt          # Final persona prompt and behavioral constraints
+├── chat_history.md             # Exported multi-turn conversation transcript
+├── chat_rubric.txt             # Final scoring rubric and scored evaluation
+├── chat_rubric_history.md      # Rubric design and revision history
+├── metaprompt_history.txt      # Persona prompt development and GPT-builder iteration notes
+├── mp1_chatbot_report.docx     # Full write-up
+└── README.md                   # Project overview
+```
+
+---
+
+## Why This Project Matters
+
+Persona prompting can look successful in isolated responses, but multi-turn conversations expose weaknesses that are easy to miss.
+
+A model may:
+
+- remember the broad role but lose the specific voice,
+- stay conversational but ignore formatting constraints,
+- use generic friendliness instead of the designed personality,
+- preserve topic relevance but drop distinctive quirks,
+- or invent plausible details that are not grounded in the prompt.
+
+This project treats persona prompting as an evaluation problem, not just a creative writing exercise. The goal is to make persona quality more measurable, repeatable, and debuggable.
+
+---
+
+## Persona Prompt Design
+
+The persona prompt defines a non-public student persona: a German-born senior Studio Art major with a computing concentration at Kenyon College.
+
+The final prompt specifies that the persona should:
+
+- stay fully in character,
+- respond like a quick text,
+- use two very short sentences maximum,
+- avoid similes and metaphors,
+- avoid sounding bubbly, cutesy, or over-enthusiastic,
+- naturally but sparingly use conversational quirks,
+- never step outside character,
+- and follow highly specific punctuation, capitalization, abbreviation, and emoji constraints.
+
+Example constraints include:
+
+```text
+- Use short quick-text responses
+- Never use similes or metaphors
+- Do not sound bubbly or cutesy
+- Use quirks like "Ahhh," "Boo," and "Ughh" naturally but not excessively
+- Occasionally use approved emojis only
+- Avoid generic assistant behavior
+```
+
+The full persona prompt is available in:
+
+```text
+prompt_persona.txt
+```
+
+---
+
+## Prompt Development Process
+
+The prompt began as a detailed “brain dump” of background, personality, relationships, habits, style, and conversational quirks. Because the persona was not a public figure or established fictional character, there was no external reference base to rely on. All evaluation therefore had to be grounded in the prompt itself.
+
+The metaprompt history documents several important refinements:
+
+- adding stricter response length limits,
+- banning similes and metaphors,
+- preventing exaggerated quirks,
+- limiting emoji usage,
+- avoiding bubbly or cutesy tone,
+- removing gimmicky phrases like “or bust,”
+- and making the persona sound more like a grounded, natural conversational partner.
+
+These iterations are documented in:
+
+```text
+metaprompt_history.txt
+```
+
+---
+
+## Conversation Protocol
+
+After creating the persona, I ran a casual multi-turn conversation designed to test whether the chatbot could maintain character in ordinary, low-stakes dialogue.
+
+The conversation includes prompts about:
+
+- homework,
+- roommates and friends,
+- dining hall plans,
+- watching TV,
+- grocery shopping,
+- and scheduling around classwork.
+
+This type of casual conversation is useful because it tests whether persona traits survive ordinary interaction rather than only appearing when the user explicitly asks persona-relevant questions.
+
+The transcript is available in:
+
+```text
+chat_history.md
+```
+
+---
+
+## Evaluation Framework
+
+The project uses a weighted 0–100 point rubric designed specifically for **non-public figure personas**.
+
+Because the persona cannot be fact-checked against an external public identity, the rubric evaluates faithfulness to the system prompt rather than real-world authenticity.
+
+### Evaluation factors
+
+| Factor | Weight | What it measures |
+|---|---:|---|
+| Persona Alignment | 25% | Whether responses reflect the traits, background, worldview, and quirks defined in the prompt |
+| Prompt-Bound Fidelity | 20% | Whether expansions remain plausible and non-contradictory relative to the prompt |
+| Voice & Style Appropriateness | 15% | Whether the language and tone match the persona’s intended voice |
+| Contextual Responsiveness | 15% | Whether the persona is integrated into the actual dialogue turns |
+| Creativity & Depth | 15% | Whether the persona feels specific, vivid, and non-generic |
+| Engagement & Coherence | 10% | Whether the conversation flows naturally and stays coherent |
+
+The final rubric and scored evaluation are available in:
+
+```text
+chat_rubric.txt
+```
+
+The rubric design history is available in:
+
+```text
+chat_rubric_history.md
+```
 
 ---
 
 ## Results
 
-* **Overall Score:** **90/100**
-* **Strengths:** Coherent, engaging replies; conversational flow matched the intended “roommate/friend” dynamic.
-* **Weaknesses:** Inconsistent enforcement of persona-specific quirks (e.g., strict tone/emoji/capitalization rules).
+The chatbot received a final score of:
 
-**Key Takeaway:** Even with strong prompt engineering, LLMs tend to drift toward generic styles during longer conversations. A structured rubric surfaces these gaps and enables targeted prompt revisions.
+```text
+67/100
+```
 
----
+### Strengths
 
-## Highlight: Persona Prompt Techniques
+The model performed well on basic conversational flow. It responded naturally to user prompts, maintained a believable roommate/friend dynamic, and avoided obvious breaks into generic “AI assistant” behavior.
 
-* **Constraint-based style controls:** sentence length limits, emoji policies, capitalization/punctuation rules.
-* **Behavioral quirks:** casual shorthand, emphasis patterns, “voice” tics to differentiate from generic chat.
-* **Grounded backstory:** academic, cultural, and social context to steer factual anchors and references.
-* **Iteration loop:** refine → converse → score → adjust weights/constraints (tracked in rubric and metaprompt histories).
+Strong areas included:
 
----
+- coherence,
+- casual engagement,
+- contextual responsiveness,
+- and plausible everyday conversation.
 
-## Files Description
+### Weaknesses
 
-* **`mp1_chatbot_report.docx`** — Full project write-up (overview, methods, results, discussion).
-* **`prompt_persona.txt`** — The persona’s system prompt and stylistic constraints used for evaluation.
-* **`chat_history.md`** — 10-turn conversation transcript used to assess persona fidelity.
-* **`chat_rubric.txt`** — Rubric with factors, behavioral indicators, and weights (0–100 scoring).
-* **`chat_rubric_history.md`** — Versioned notes on rubric changes (what changed and why).
-* **`metaprompt_history.txt`** — Iterations and notes on the metaprompt/persona prompt design.
-* **`README.md`** — This landing page.
+The model struggled most with strict persona and style adherence.
 
----
+Major issues included:
 
-## Usage Instructions
+- frequent use of punctuation despite the prompt forbidding it,
+- inconsistent use of required quirks,
+- limited use of persona-specific backstory,
+- generic college-friend tone,
+- weak enforcement of short-response constraints,
+- and little integration of distinctive details like German background, Berlin study abroad, family, art/culture interests, or specific speech patterns.
 
-### Quick Start (Replicate the Study)
-
-1. **Clone:**
-
-   ```bash
-   git clone https://github.com/tiffani3ng/iphs391_fall2025_miniproject-1_benchmarking-expert-chatbot-personas.git
-   cd iphs391_fall2025_miniproject-1_benchmarking-expert-chatbot-personas
-   ```
-2. **Review the Persona & Rubric:**
-
-   * Open `prompt_persona.txt` and `chat_rubric.txt`.
-3. **Run a 10-Turn Conversation:**
-
-   * Paste the persona prompt into your LLM (e.g., ChatGPT).
-   * Conduct a 10-turn exchange (keep your prompts consistent if comparing versions).
-4. **Score with the Rubric:**
-
-   * Use `chat_rubric.txt` to grade each factor (apply weights to compute 0–100).
-5. **Compare & Iterate:**
-
-   * Log scores and observations.
-   * Adjust constraints and re-test; record changes in `chat_rubric_history.md` and/or `metaprompt_history.txt`.
-
-### Reusing the Rubric
-
-* Keep factors and weights consistent across tests to ensure **fair comparisons**.
-* If you modify weights, document rationale in `chat_rubric_history.md`.
+The result was a bot that felt conversationally believable but not strongly anchored to the designed persona.
 
 ---
 
-## Installation
+## Key Finding: Persona Drift
 
-No code build is required. Any modern LLM interface is sufficient to replicate the conversation and scoring workflow.
+The central finding is that **LLMs can maintain conversational coherence while still drifting away from persona specificity**.
 
----
+In this case, the chatbot did not fail by becoming incoherent. It failed more subtly: it became a generic casual friend rather than the specific persona defined in the prompt.
 
-## Contributing
+This distinction matters for persona evaluation. A chatbot can feel “good” in conversation while still failing the actual prompt specification.
 
-Contributions are welcome! Consider:
+## Evaluation Takeaway
 
-* Proposing rubric refinements or alternative factor definitions,
-* Adding new personas and transcripts,
-* Sharing comparative results across models.
-
-Open a PR with a clear summary of changes and rationale. For substantial changes (e.g., rubric weights), include notes in `chat_rubric_history.md`.
+The benchmark shows why AI outputs should be evaluated against the original behavioral goal, not just against whether they seem fluent or pleasant. In this case, the chatbot produced natural responses, but the score revealed that it failed to preserve several measurable requirements from the prompt: style constraints, punctuation rules, response length, approved quirks, and persona-specific grounding.
 
 ---
 
-## Acknowledgments
+## Example Failure Pattern
 
-Developed as part of **IPHS 391 (Fall 2025)**.
+The persona prompt required short responses, no punctuation, specific quirks, and occasional approved emojis. However, the transcript includes responses such as:
+
+```text
+Trying to decide if I want pasta or beans for dinner… again. What about u
+```
+
+This response is coherent and contextually natural, but it violates or weakens several prompt constraints:
+
+- it uses punctuation,
+- it exceeds the intended quick-text style,
+- it does not strongly reflect the specific persona,
+- and it reads more like a generic peer than the designed character.
+
+This kind of failure is why a structured rubric is useful: it separates general conversational quality from persona fidelity.
 
 ---
+
+## Methodology
+
+The study followed this workflow:
+
+```text
+1. Design persona prompt
+2. Build custom persona chatbot
+3. Run casual multi-turn conversation
+4. Create rubric for non-public figure persona evaluation
+5. Score transcript against rubric
+6. Identify strengths, weaknesses, and drift patterns
+```
+
+### 1. Persona prompt engineering
+
+I created a detailed system prompt with biographical grounding, personality traits, social context, and strict style rules.
+
+### 2. Conversation testing
+
+I ran a casual conversation intended to test whether the persona could remain consistent in a realistic roommate/friend interaction.
+
+### 3. Rubric design
+
+I developed a weighted scoring rubric for non-public figure personas, where correctness is defined by prompt fidelity rather than external fact-checking.
+
+### 4. Scored evaluation
+
+I applied the rubric to the transcript and calculated a final score of 67/100.
+
+### 5. Reflection
+
+I identified where the model maintained coherence and where it lost persona-specific voice, constraints, and background details.
+
+---
+
+## How to Replicate the Benchmark
+
+No installation is required. This repository is a prompt-evaluation artifact rather than a software package.
+
+### Step 1: Review the persona prompt
+
+Open:
+
+```text
+prompt_persona.txt
+```
+
+### Step 2: Run a conversation
+
+Paste the persona prompt into an LLM interface and conduct a multi-turn conversation.
+
+For best comparison, use similar casual prompts that require the model to respond naturally rather than explicitly describe the persona.
+
+### Step 3: Save the transcript
+
+Export or copy the conversation into a Markdown file.
+
+### Step 4: Score with the rubric
+
+Open:
+
+```text
+chat_rubric.txt
+```
+
+Score the transcript across the six rubric categories.
+
+### Step 5: Compare drift patterns
+
+Look for where the model:
+
+- follows the persona,
+- becomes generic,
+- violates explicit constraints,
+- invents unsupported details,
+- or preserves coherence while losing voice.
+
+---
+
+## What This Repository Demonstrates
+
+This project demonstrates several practical skills:
+
+- prompt engineering for persona behavior,
+- system prompt iteration,
+- evaluation design for non-public personas,
+- rubric-based LLM assessment,
+- qualitative transcript analysis,
+- identification of persona drift,
+- and clear documentation of model strengths and failure modes.
+
+It also shows why LLM evaluation should distinguish between:
+
+```text
+"Does this response sound natural?"
+```
+
+and:
+
+```text
+"Does this response satisfy the actual behavioral specification?"
+```
+
+Those are not always the same thing.
+
+---
+
+## Limitations
+
+This is a small exploratory benchmark, not a large-scale study.
+
+Current limitations include:
+
+- only one persona was tested,
+- only one conversation transcript was evaluated,
+- the conversation context was casual and narrow,
+- no cross-model comparison was performed,
+- the rubric involves qualitative judgment,
+- and the persona is based on a non-public figure, so evaluation must remain prompt-bound rather than externally factual.
+
+Future work could expand the benchmark by testing multiple personas, running controlled conversations across different models, using multiple raters, and comparing how different prompt revisions affect persona drift.
+
+---
+
+## Ethical Note
+
+This project involves a persona based on a non-public individual. For that reason, the evaluation is framed around **prompt adherence and model behavior**, not claims about real-world authenticity.
+
+The benchmark should be understood as an exercise in prompt design and LLM behavior analysis, not as a definitive representation of any real person.
+
+---
+
+## File Guide
+
+| File | Description |
+|---|---|
+| `prompt_persona.txt` | Final persona prompt, including background, personality, conversational quirks, and behavioral constraints |
+| `chat_history.md` | Exported casual conversation transcript used for evaluation |
+| `chat_rubric.txt` | Final rubric and scored evaluation report |
+| `chat_rubric_history.md` | Transcript showing how the rubric was created and revised for non-public figure personas |
+| `metaprompt_history.txt` | Notes and GPT-builder interaction history showing how the persona prompt evolved |
+| `mp1_chatbot_report.docx` | Full project write-up with project overview, analysis, and reflection |
+| `README.md` | Repository overview and replication guide |
+
+---
+
+## Author
+
+**Tiffanie Ng**  
+Economics & Mathematics major, Scientific Computing concentration  
+Kenyon College ’26  
+
+[LinkedIn](https://www.linkedin.com/in/tiffanie-ng)
